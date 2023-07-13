@@ -1,31 +1,31 @@
 import React, { useState, useEffect } from "react"
 import allProducts from "../fake-data/all-products"
 import allCategories from "../fake-data/all-categories"
+import ProductCard from "./ProductCard"
 
 const Products = () => {
     const [filter, setFilter] = useState(allProducts)
     const [selectedCategory, setSelectedCategory] = useState("All")
 
+    const categoryKey = "selectedCategory"
+
     useEffect(() => {
         const selectedCategoryFromLocalStorage =
-            localStorage.getItem("selectedCategory")
-
+            localStorage.getItem(categoryKey)
         setSelectedCategory(selectedCategoryFromLocalStorage || "All")
     }, [])
 
     useEffect(() => {
-        if (selectedCategory === "All") {
-            setFilter(allProducts)
-        } else {
-            setFilter(
-                allProducts.filter(
-                    (product) =>
-                        product.category === selectedCategory.substring(6)
-                )
-            )
-        }
+        const filteredProducts =
+            selectedCategory === "All"
+                ? allProducts
+                : allProducts.filter(
+                      (product) =>
+                          product.category === selectedCategory.substring(6)
+                  )
+        setFilter(filteredProducts)
 
-        localStorage.setItem("selectedCategory", selectedCategory)
+        localStorage.setItem(categoryKey, selectedCategory)
     }, [selectedCategory])
 
     const handleCategoryClick = (category) => {
@@ -59,27 +59,7 @@ const Products = () => {
                     ))}
                 </div>
                 {filter.map((product) => (
-                    <div className="col-md-3 mb-4 " key={product.id}>
-                        <div className="card h-100 text-center p-4">
-                            <img
-                                src={product.image}
-                                className="card-img-top"
-                                alt={product.title}
-                                height="250px"
-                            />
-                            <div className="card-body">
-                                <h5 className="card-title mb-0">
-                                    {product.title.substring(0, 12)} ...
-                                </h5>
-                                <p className="card-text fw-bold">
-                                    ${product.price}
-                                </p>
-                                <a href="/" className="btn btn-outline-dark">
-                                    Buy Now
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                    <ProductCard key={product.id} product={product} />
                 ))}
             </div>
         </div>
